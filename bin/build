@@ -1,0 +1,72 @@
+#!/usr/bin/env node
+
+const path = require("node:path");
+const fs = require("node:fs");
+const parseArgs = require("minimist");
+const esbuild = require("esbuild");
+
+const args = parseArgs(process.argv.slice(2), { alias: { watch: "w" } });
+
+const overridesPlugin = {
+  name: "overrides",
+  setup(build) {
+    const quillDir = path.dirname(require.resolve("quill"));
+    const overridesDir = path.resolve("./src/overrides");
+
+    build.onResolve({ filter: /^~quill/, namespace: "file" }, (args) => {
+      if (!args.resolveDir.startsWith(overridesDir)) {
+        return null;
+      }
+
+      const relativePath = args.path.substring(6);
+      return { path: path.join(quillDir, relativePath), namespace: "file" };
+    });
+
+    build.onResolve({ filter: /\.js$/, namespace: "file" }, (args) => {
+      if (args.resolveDir.startsWith(quillDir)) {
+        const relativePath = path.join(args.resolveDir, args.path).substring(quillDir.length);
+        const overridePath = path.join(overridesDir, relativePath);
+        if (fs.existsSync(overridePath)) {
+          return { path: overridePath, namespace: "file" };
+        }
+      }
+
+      return null;
+    })
+  },
+};
+
+const build = async () => {
+  const contextArgs = {
+    logLevel: "info",
+    format: "esm",
+    nodePaths: ["src"],
+    entryPoints: ["src/dippen.js"],
+    bundle: true,
+    outdir: "dist",
+    loader: {
+      ".css": "text"
+    },
+    plugins: [overridesPlugin]
+  };
+  const context = await esbuild.context(contextArgs);
+
+  if (args.watch) {
+    const terminate = async () => {
+      console.log("Disposing context...");
+      await context.dispose();
+
+      console.log("Done, bye bye!");
+      process.exit();
+    };
+    process.on("SIGINT", terminate);
+    process.on("SIGTERM", terminate);
+
+    await context.watch();
+  } else {
+    await context.rebuild();
+    await context.dispose();
+  }
+};
+
+build();

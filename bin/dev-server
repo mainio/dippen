@@ -1,0 +1,76 @@
+#!/usr/bin/env node
+
+const path = require('node:path');
+const Koa = require('koa');
+const { send } = require('@koa/send');
+const { createCanvas } = require('canvas');
+
+const ROOT_PATH = path.resolve(__dirname, '../');
+const PUBLIC_PATH = path.resolve(ROOT_PATH, 'public');
+const DIST_PATH = path.resolve(ROOT_PATH, 'dist');
+const QUILL_DIST_PATH = path.resolve(path.dirname(require.resolve("quill")), 'dist');
+
+const app = new Koa();
+
+// Serve the static assets using @koa/send
+app.use(async (ctx, next) => {
+  await next()
+
+  if (ctx.method !== 'HEAD' && ctx.method !== 'GET') return
+  // response is already handled
+  if (ctx.body != null || ctx.status !== 404) return // eslint-disable-line
+
+  try {
+    let match = null;
+    if (ctx.path === '/assets/dippen.js') {
+      await send(ctx, 'dippen.js', { root: DIST_PATH });
+      return;
+    } else if ((match = ctx.path.match(/^\/assets\/(.*\.css)$/))) {
+      await send(ctx, match[1], { root: QUILL_DIST_PATH });
+      return;
+    }
+
+    await send(ctx, ctx.path, { root: PUBLIC_PATH, index: 'index.html' });
+  } catch (err) {
+    if (err.status !== 404) {
+      throw err
+    }
+  }
+});
+
+// This is a dummy image uploader that only responds to the image upload
+// requests and renders plain gray images matching the resolution of the
+// uploaded image. This does not actually store the images and the only purpose
+// of this backend is for testing that the image upload works correctly with the
+// editor.
+app.use(async (ctx, next) => {
+  if (ctx.path === '/upload-image') {
+    if (ctx.method === 'POST' && ctx.request.is('multipart/form-data')) {
+      ctx.body = {
+        url: '/images/600x400.png',
+        message: 'Image uploaded successfully'
+      }
+    } else {
+      return await next();
+    }
+  } else {
+    const imgMatch = ctx.path.match(/^\/images\/([0-9]+x[0-9]+).png$/);
+    if (imgMatch) {
+      const [width, height] = imgMatch[1].split('x').map((n) => parseInt(n));
+
+      const canvas = createCanvas(width, height);
+      const imageCtx = canvas.getContext('2d');
+      imageCtx.fillStyle = '#5d5d5d';
+      imageCtx.fillRect(0, 0, width, height);
+
+      ctx.type = 'image/png';
+      ctx.body = canvas.createPNGStream();
+    } else {
+      return await next();
+    }
+  }
+});
+
+console.log("Web server listening at: http://localhost:8080");
+app.listen(8080);
+

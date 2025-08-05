@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Dippen - Test page</title>
+
+  <link href="/assets/quill.snow.css" rel="stylesheet">
+<style>
+html {
+  font-family: sans-serif;
+}
+
+#wrapper {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.content h1 {
+  text-align: center;
+}
+
+.ql-editor p {
+  margin-bottom: 1rem;
+}
+</style>
+</head>
+<body>
+  <div id="wrapper">
+    <div class="content">
+      <h1>Dippen - Test page</h1>
+    </div>
+    <div id="editor">
+      <h2>Welcome to Dippen!</h2>
+      <p>This is some content.<br>This is content after a soft break.</p>
+      <p><img src="/images/600x400.png" alt="This is an image"></p>
+    </div>
+  </div>
+
+<script type="module">
+import Quill, { createServerUploader } from "./assets/dippen.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+  const outerContainer = document.getElementById("editor");
+  const container = document.createElement("div");
+  container.innerHTML = outerContainer.innerHTML;
+  outerContainer.innerHTML = '';
+  outerContainer.append(container);
+
+  const quillFormats = [
+    "bold",
+    "italic",
+    "link",
+    "underline",
+    "header",
+    "list",
+    "break",
+    "soft-break",
+    "code",
+    "blockquote",
+    "indent",
+    "image",
+    "video",
+  ];
+  const quillToolbar = [
+    [{ header: [2, 3, 4, 5, 6, false] }],
+    ["bold", "italic", "underline", "soft-break"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["link", "clean"],
+    ["code", "blockquote"],
+    [{ indent: "-1" }, { indent: "+1" }],
+    ["video"],
+    ["image"]
+  ];
+
+  const imageUploader = createServerUploader('/upload-image');
+
+  const modules = {
+    toolbar: {
+      container: quillToolbar,
+    },
+    imageResize: { modules: ["Resize", "DisplaySize", "Keyboard"] },
+    imageAlt: true,
+    uploader: {
+      async uploadHandler(file) {
+        const response = await imageUploader(file);
+        return response.url;
+      },
+    }
+  };
+
+  const quill = new Quill(container, {
+    modules: modules,
+    formats: quillFormats,
+    theme: "snow"
+  });
+});
+</script>
+</body>
+</html>

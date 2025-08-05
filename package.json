@@ -1,0 +1,29 @@
+{
+  "name": "dippen",
+  "version": "2.0.301",
+  "description": "A rich text editor based on Quill with some improved features.",
+  "main": "dist/dippen.js",
+  "files": [
+    "README.md",
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "node ./bin/build",
+    "dev": "node ./bin/dev-server"
+  },
+  "keywords": [
+    "editor"
+  ],
+  "author": "Mainio Tech Oy",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "quill": "^2.0.3"
+  },
+  "devDependencies": {
+    "@koa/send": "^6.0.0",
+    "canvas": "^3.1.2",
+    "esbuild": "^0.25.8",
+    "koa": "^3.0.1",
+    "minimist": "^1.2.8"
+  }
+}
