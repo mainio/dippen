@@ -15,11 +15,19 @@ class Clipboard extends QuillClipboard {
     super(quill, options);
 
     // Replace the `br` matcher with the custom implementation.
-    const matcherIdx = this.matchers.findIndex(([selector, _]) => selector === 'br');
-    if (matcherIdx < 0) {
-      return;
+    const brIdx = this.matchers.findIndex(([selector, _]) => selector === 'br');
+    if (brIdx > -1) {
+      this.matchers[brIdx] = ['br', matchBreak];
     }
-    this.matchers[matcherIdx] = ['br', matchBreak];
+
+    // Replace the match styles element node matcher with the custom
+    // implementation.
+    const styleIdx = this.matchers.findIndex(([selector, matcher]) => {
+      return selector === Node.ELEMENT_NODE && matcher.name === 'matchStyles';
+    });
+    if (styleIdx > -1) {
+      this.matchers[styleIdx] = [Node.ELEMENT_NODE, matchStyles]
+    }
   }
 
   // The paste override is for passing the pasted content to the `Uploader`
@@ -112,6 +120,54 @@ function matchBreak(node, delta, scroll) {
     return new Delta().insert('\n');
   }
   return new Delta().insert(SOFT_BREAK_CHARACTER);
+}
+
+function applyFormat(delta, format, value, scroll) {
+  if (!scroll.query(format)) {
+    return delta;
+  }
+  return delta.reduce((newDelta, op) => {
+    if (!op.insert) return newDelta;
+    if (op.attributes && op.attributes[format]) {
+      return newDelta.push(op);
+    }
+    const formats = value ? {
+      [format]: value
+    } : {};
+    return newDelta.insert(op.insert, {
+      ...formats,
+      ...op.attributes
+    });
+  }, new Delta());
+}
+
+function matchStyles(node, delta, scroll) {
+  const formats = {};
+  const style = node.style || {};
+  if (style.fontStyle === 'italic') {
+    formats.italic = true;
+  }
+  if (style.textDecoration === 'underline' && node.nodeName !== 'A') {
+    formats.underline = true;
+  }
+  if (style.textDecoration === 'line-through') {
+    formats.strike = true;
+  }
+  if (style.fontWeight?.startsWith('bold') ||
+  // @ts-expect-error Fix me later
+  parseInt(style.fontWeight, 10) >= 700) {
+    formats.bold = true;
+  }
+  delta = Object.entries(formats).reduce((newDelta, _ref5) => {
+    let [name, value] = _ref5;
+    return applyFormat(newDelta, name, value, scroll);
+  }, delta);
+  // @ts-expect-error
+  if (parseFloat(style.textIndent || 0) > 0) {
+    // Could be 0.5in
+    return new Delta().insert('\t').concat(delta);
+  }
+  return delta;
 }
 
 export { Clipboard as default, matchAttributor, matchBlot, matchNewline, matchText, traverse };
