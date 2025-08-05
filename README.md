@@ -85,11 +85,11 @@ const quillFormats = [
 
 export default function createQuillEditor(container) {
   const toolbar = container.dataset.toolbar;
-  const disabled = container.dataset.disabled;
+  const disabled = container.dataset.disabled === "true";
 
   const allowedEmptyContentSelector = "iframe";
   let quillToolbar = [
-    ["bold", "italic", "underline", "linebreak"],
+    ["bold", "italic", "underline", "soft-break"],
     [{ list: "ordered" }, { list: "bullet" }],
     ["link", "clean"],
     ["code", "blockquote"],
@@ -151,7 +151,7 @@ export default function createQuillEditor(container) {
     help.classList.add("help-text");
     help.style.marginTop = "-1.5rem";
     help.innerText = container.dataset.dragAndDropHelpText;
-    container.append(help);
+    container.after(help);
   }
 
   const quill = new Quill(container, {
