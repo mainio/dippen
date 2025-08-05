@@ -40,6 +40,8 @@ Changes implemented on top of the default Quill v2 implementation:
   has a style attribute with `text-decoration: underline` defined on it.
 - Bugfix for formatting the video `<iframe>` elements correctly through
   `quill.getSemanticHTML()`.
+- Bugfix for converting the non-breaking spaces with `quill.getSemanticHTML()`
+  as normal spaces (otherwise all spaces are represented as `&nbsp`).
 
 The Decidim maintenance version can be found from:
 
