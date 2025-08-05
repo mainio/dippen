@@ -36,6 +36,10 @@ Changes implemented on top of the default Quill v2 implementation:
   version: https://github.com/kensnyder/quill-image-resize-module)
 - Image ALT module allowing to set ALT text to images by double clicking the
   image.
+- Bugfix for not wrapping `<a>` elements within `<u>` in case the `<a>` element
+  has a style attribute with `text-decoration: underline` defined on it.
+- Bugfix for formatting the video `<iframe>` elements correctly through
+  `quill.getSemanticHTML()`.
 
 The Decidim maintenance version can be found from:
 
