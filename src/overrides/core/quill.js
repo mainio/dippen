@@ -1,7 +1,5 @@
 import CoreQuill, { Parchment, Range, globalRegistry, expandConfig, overload } from '~quill/core/quill.js';
 
-console.log('load quill');
-
 class Quill extends CoreQuill {
   // See:
   // https://github.com/slab/quill/issues/4509
