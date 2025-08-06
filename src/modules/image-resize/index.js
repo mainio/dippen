@@ -107,7 +107,9 @@ export default class QuillResize {
     )
 
     this.modules.forEach(module => {
-      module.onCreate(this)
+      if (!this.options.embedTags.includes(this.activeEle.tagName)){
+        module.onCreate(this)
+      }
     })
 
     this.onUpdate()
@@ -223,9 +225,11 @@ export default class QuillResize {
   }
 
   show() {
-    this.showOverlay()
-    this.initializeModules()
-    if (this.options.activeClass) this.activeEle.classList.add(this.options.activeClass)
+    if (this.activeEle.tagName !== "IFRAME") {
+      this.showOverlay()
+      this.initializeModules()
+    }
+  if (this.options.activeClass) this.activeEle.classList.add(this.options.activeClass)
   }
 
   showOverlay() {
