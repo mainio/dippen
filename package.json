@@ -8,9 +8,11 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "node ./bin/build",
-    "dev": "node ./bin/dev-server"
-  },
+  "build": "node ./bin/build",
+  "watch": "node ./bin/build --watch",
+  "dev": "npm-run-all --parallel dev-server watch",
+  "dev-server": "node ./bin/dev-server"
+},
   "keywords": [
     "editor"
   ],
