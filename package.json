@@ -1,6 +1,6 @@
 {
   "name": "dippen",
-  "version": "2.0.305",
+  "version": "2.0.306",
   "description": "A rich text editor based on Quill with some improved features.",
   "main": "dist/dippen.js",
   "files": [
