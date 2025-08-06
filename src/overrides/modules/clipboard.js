@@ -21,12 +21,18 @@ class Clipboard extends QuillClipboard {
     }
 
     // Replace the match styles element node matcher with the custom
-    // implementation.
+    // implementation. We assume this is the 4th element matcher in the list as
+    // is with Quill version 2.0.3. The matcher function's name is not reliable
+    // as it can change if the bundled JavaScript is minified.
+    let elementMatcherNum = 0;
     const styleIdx = this.matchers.findIndex(([selector, matcher]) => {
-      return selector === Node.ELEMENT_NODE && matcher.name === 'matchStyles';
+      if (selector === Node.ELEMENT_NODE) {
+        elementMatcherNum += 1;
+      }
+      return selector === Node.ELEMENT_NODE && elementMatcherNum === 4;
     });
     if (styleIdx > -1) {
-      this.matchers[styleIdx] = [Node.ELEMENT_NODE, matchStyles]
+      this.matchers[styleIdx] = [Node.ELEMENT_NODE, matchStyles];
     }
   }
 
