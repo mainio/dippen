@@ -12,6 +12,7 @@ const overridesPlugin = {
   setup(build) {
     const quillDir = path.dirname(require.resolve("quill"));
     const overridesDir = path.resolve("./src/overrides");
+    const srcDir = path.resolve("./src");
 
     build.onResolve({ filter: /^~quill/, namespace: "file" }, (args) => {
       if (!args.resolveDir.startsWith(overridesDir)) {
@@ -23,8 +24,14 @@ const overridesPlugin = {
     });
 
     build.onResolve({ filter: /\.js$/, namespace: "file" }, (args) => {
+      let relativePath = null;
       if (args.resolveDir.startsWith(quillDir)) {
-        const relativePath = path.join(args.resolveDir, args.path).substring(quillDir.length);
+        relativePath = path.join(args.resolveDir, args.path).substring(quillDir.length);
+      } else if (args.path.startsWith('quill/') && args.resolveDir.startsWith(srcDir)) {
+        relativePath = args.path.substring(6);
+      }
+
+      if (relativePath !== null) {
         const overridePath = path.join(overridesDir, relativePath);
         if (fs.existsSync(overridePath)) {
           return { path: overridePath, namespace: "file" };
