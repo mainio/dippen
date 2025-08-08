@@ -1,6 +1,6 @@
 {
   "name": "dippen",
-  "version": "2.0.308",
+  "version": "2.0.305",
   "description": "A rich text editor based on Quill with some improved features.",
   "main": "dist/dippen.js",
   "files": [
@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "node ./bin/build",
+    "watch": "node ./bin/build --watch",
     "dev": "npm-run-all --parallel dev-server watch",
     "dev-server": "node ./bin/dev-server"
   },
