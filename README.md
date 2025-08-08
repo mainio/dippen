@@ -36,12 +36,19 @@ Changes implemented on top of the default Quill v2 implementation:
   version: https://github.com/kensnyder/quill-image-resize-module)
 - Image ALT module allowing to set ALT text to images by double clicking the
   image.
+- Customized `Link` format that allows formatting the `class` and `target`
+  attributes for the `<a>` elements properly.
+- A dynamic toolbar module for displaying toolbar items dynamically and
+  conditionally based on the current state of the editor. This provides extra
+  dropdown controls on the toolbar that allow changing link attributes (target
+  and class), originally based on
+  [DynamicQuillTools](https://github.com/T-vK/DynamicQuillTools).
 - Bugfix for not wrapping `<a>` elements within `<u>` in case the `<a>` element
   has a style attribute with `text-decoration: underline` defined on it.
 - Bugfix for formatting the video `<iframe>` elements correctly through
   `quill.getSemanticHTML()`.
 - Bugfix for converting the non-breaking spaces with `quill.getSemanticHTML()`
-  as normal spaces (otherwise all spaces are represented as `&nbsp`).
+  as normal spaces (otherwise all spaces are represented as `&nbsp;`).
 
 The Decidim maintenance version can be found from:
 
@@ -73,7 +80,7 @@ In case you want to use this outside of that Decidim version, you need to
 override `app/packs/src/decidim/editor.js` with the following code:
 
 ```js
-import Quill, { createServerUploader } from "dippen";
+import Quill, { dynamicToobarItems, createServerUploader } from "dippen";
 
 const quillFormats = [
   "bold",
@@ -104,6 +111,7 @@ export default function createQuillEditor(container) {
 
   let addImage = false;
   let addVideo = false;
+  let addDynamicToolbar = false;
 
   /**
    * - basic = only basic controls without titles
@@ -115,6 +123,7 @@ export default function createQuillEditor(container) {
   } else if (toolbar === "full") {
     addImage = true;
     addVideo = true;
+    addDynamicToolbar = true;
     quillToolbar = [
       [{ header: [2, 3, 4, 5, 6, false] }],
       ...quillToolbar,
@@ -158,6 +167,33 @@ export default function createQuillEditor(container) {
     help.style.marginTop = "-1.5rem";
     help.innerText = container.dataset.dragAndDropHelpText;
     container.after(help);
+  }
+
+  if (addDynamicToolbar) {
+    modules.dynamicToolbar = {
+      items: dynamicToobarItems({
+        target: {
+          blot: "link",
+          options: {
+            "Link": "",
+            "New tab": "_blank"
+          }
+        },
+        style: {
+          blot: "link",
+          attribute: "class",
+          options: {
+            "Default": "",
+            "Small button": "button primary small",
+            "Small button (hollow)": "button primary hollow small",
+            "Standard button": "button primary",
+            "Standard button (hollow)": "button primary hollow",
+            "Large button": "button primary large",
+            "Large button (hollow)": "button primary hollow large"
+          }
+        }
+      })
+    };
   }
 
   const quill = new Quill(container, {
@@ -219,3 +255,4 @@ within this repository):
 - [Quill - BSD 3-clause](https://github.com/slab/quill/blob/main/LICENSE)
 - [Image resize module - MIT](https://github.com/mudoo/quill-resize-module/blob/master/LICENSE)
 - [Image upload module - MIT](https://github.com/fxmontigny/quill-image-upload/blob/71d9009be03196a2a3eb05a962f79af91c3ef735/package.json#L22)
+- [DynamicQuillTools - BSD 3-clause](https://github.com/T-vK/DynamicQuillTools/blob/master/LICENSE)
