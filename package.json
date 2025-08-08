@@ -8,11 +8,10 @@
     "dist/**"
   ],
   "scripts": {
-  "build": "node ./bin/build",
-  "watch": "node ./bin/build --watch",
-  "dev": "npm-run-all --parallel dev-server watch",
-  "dev-server": "node ./bin/dev-server"
-},
+    "build": "node ./bin/build",
+    "dev": "npm-run-all --parallel dev-server watch",
+    "dev-server": "node ./bin/dev-server"
+  },
   "keywords": [
     "editor"
   ],
@@ -23,9 +22,12 @@
   },
   "devDependencies": {
     "@koa/send": "^6.0.0",
+    "@playwright/test": "^1.54.2",
+    "@types/node": "^24.2.0",
     "canvas": "^3.1.2",
     "esbuild": "^0.25.8",
     "koa": "^3.0.1",
-    "minimist": "^1.2.8"
+    "minimist": "^1.2.8",
+    "npm-run-all": "^4.1.5"
   }
 }
