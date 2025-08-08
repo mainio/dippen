@@ -22,8 +22,9 @@ class Link extends QuillLink {
       node = super.create(value?.href);
     }
 
-    if (value.className) {
-      node.setAttribute('class', value.className);
+    const cls = value.class ?? value.className;
+    if (cls) {
+      node.setAttribute('class', cls);
     }
     if (value.target) {
       node.setAttribute('target', value.target);
