@@ -80,7 +80,7 @@ In case you want to use this outside of that Decidim version, you need to
 override `app/packs/src/decidim/editor.js` with the following code:
 
 ```js
-import Quill, { dynamicToobarItems, createServerUploader } from "dippen";
+import Quill, { dynamicToolbarItems, createServerUploader } from "dippen";
 
 const quillFormats = [
   "bold",
@@ -171,7 +171,7 @@ export default function createQuillEditor(container) {
 
   if (addDynamicToolbar) {
     modules.dynamicToolbar = {
-      items: dynamicToobarItems({
+      items: dynamicToolbarItems({
         target: {
           blot: "link",
           options: {
