@@ -15,7 +15,12 @@ const ATTRIBUTES = ['href', 'class', 'target'];
 
 class Link extends QuillLink {
   static create(value) {
-    const node = super.create(value);
+    let node = null;
+    if (typeof value === 'string') {
+      node = super.create(value);
+    } else {
+      node = super.create(value?.href);
+    }
 
     if (value.className) {
       node.setAttribute('class', value.className);
