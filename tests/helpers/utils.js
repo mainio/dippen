@@ -2,12 +2,7 @@ import { Locator, Page } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
-export async function dragResize(
-  page: Page,
-  handle: Locator,
-  dragX: number,
-  dragY: number
-) {
+export async function dragResize(page, handle, dragX, dragY) {
   const box = await handle.boundingBox();
   if (!box) throw new Error('Cannot find bounding box for handle');
 
@@ -31,9 +26,9 @@ export async function deleteScreenShots() {
   }
 }
 
-export async function setContentHTML(htmlString: string, page) {
+export async function setContentHTML(htmlString, page) {
   await page.evaluate((html) => {
-    const editor = (window as any).editor;
+    const editor = window.editor;
     editor.setContents([]);
     editor.clipboard.dangerouslyPasteHTML(html);
   }, htmlString);
