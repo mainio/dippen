@@ -9,6 +9,7 @@ const ROOT_PATH = path.resolve(__dirname, '../');
 const PUBLIC_PATH = path.resolve(ROOT_PATH, 'public');
 const DIST_PATH = path.resolve(ROOT_PATH, 'dist');
 const QUILL_DIST_PATH = path.resolve(path.dirname(require.resolve("quill")), 'dist');
+const PORT = process.env.PORT || 8080;
 
 const app = new Koa();
 
@@ -70,7 +71,7 @@ app.use(async (ctx, next) => {
     }
   }
 });
-const PORT = process.env.PORT || 8080;
+
 console.log(`Web server listening at: http://localhost:${PORT}`);
 app.listen(PORT);
 
