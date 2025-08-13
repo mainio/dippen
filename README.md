@@ -71,6 +71,20 @@ $ npm run dev
 After that, browse to:
 http://localhost:8080/
 
+### Automated testing
+
+There are some end-to-end tests written for the customized functionality using
+[Playwright](https://playwright.dev/) similarly to the Quill editor.
+
+To run these tests, run the following commands after installing the
+dependencies:
+
+```bash
+$ npm run build
+$ npx playwright install # will install the testing browsers
+$ npx playwright test # will run the tests
+```
+
 ## Usage
 
 To use this editor within the Decidim maintenance version (linked above), there
